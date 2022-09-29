@@ -71,6 +71,14 @@ def is_acyclic(matrix: list[list[int]]) -> bool:
 
 # Neuman-Morgenstern
 
+def find_all_indexes(lst: list, pred) -> list[int]:
+    indexes = []
+    for i, v in enumerate(lst):
+        if pred(v):
+            indexes.append(i)
+
+    return indexes
+
 
 def upperSection(matrix: list[list[int]], i: int) -> list[int]:
     section = []
@@ -80,13 +88,30 @@ def upperSection(matrix: list[list[int]], i: int) -> list[int]:
     return section
 
 
-def S0(matrix: list[list[int]]):
+def S0(matrix: list[list[int]]) -> list[int]:
     s0 = []
     for i, _ in enumerate(matrix):
         if areZeros(upperSection(matrix, i)):
             s0.append(i)
 
     return s0
+
+
+def siHelper(matrix: list[list[int]], prevS: list[int]) -> list[int]:
+    acc = []
+    for i, _ in enumerate(matrix):
+        if set(upperSection(matrix, i)).issubset(set(prevS)):
+            acc.append(i)
+
+    return acc
+
+
+def Si(matrix: list[list[int]], i: int) -> list[int]:
+    if i == 0:
+        return S0(matrix)
+
+    prevS = Si(matrix, i-1)
+    return list(set(prevS).union(set(siHelper(matrix, prevS))))
 
 
 relations = parse_binary_relations('./lab_2_variant_52.txt', 15)
