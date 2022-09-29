@@ -70,3 +70,13 @@ def is_acyclic(matrix: list[list[int]]) -> bool:
 
 
 parse_binary_relations('./lab_2_variant_52.txt', 15)
+
+# Neuman-Morgenstern
+
+
+def upperSection(matrix: list[list[int]], i: int) -> list[int]:
+    section = []
+    for row in matrix:
+        section.append(row[i])
+
+    return section
