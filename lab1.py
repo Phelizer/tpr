@@ -38,9 +38,9 @@ def remove_node(matrix: list[list[int]], i: int) -> list[list[int]]:
     return matrix_without_row
 
 
-def leads_nowhere(row: list[int]) -> bool:
+def areZeros(lst: list[int]) -> bool:
     accumulator = False
-    for elem in row:
+    for elem in lst:
         accumulator = accumulator | elem
 
     return not accumulator
@@ -54,7 +54,7 @@ def index_of_first(lst, pred):
 
 
 def find_leaf(matrix: list[list[int]]) -> int:
-    leaf_index = index_of_first(matrix, leads_nowhere)
+    leaf_index = index_of_first(matrix, areZeros)
     return leaf_index
 
 
@@ -69,8 +69,6 @@ def is_acyclic(matrix: list[list[int]]) -> bool:
     return is_acyclic(remove_node(matrix, leaf_index))
 
 
-parse_binary_relations('./lab_2_variant_52.txt', 15)
-
 # Neuman-Morgenstern
 
 
@@ -80,3 +78,15 @@ def upperSection(matrix: list[list[int]], i: int) -> list[int]:
         section.append(row[i])
 
     return section
+
+
+def S0(matrix: list[list[int]]):
+    s0 = []
+    for i, _ in enumerate(matrix):
+        if areZeros(upperSection(matrix, i)):
+            s0.append(i)
+
+    return s0
+
+
+relations = parse_binary_relations('./lab_2_variant_52.txt', 15)
