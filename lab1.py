@@ -23,10 +23,6 @@ def parse_binary_relations(path: str, omegaPower: int) -> list[list[int]]:
     number_of_matrixes: int = len(numeric_lines)/omegaPower
     relations = np.array_split(numeric_lines, number_of_matrixes)
 
-    # for rel in relations:
-    #     listy_rel = rel.tolist()
-    #     print(is_acyclic(listy_rel))
-
     return relations
 
 
@@ -116,3 +112,40 @@ def Si(matrix: list[list[int]], i: int) -> list[int]:
 
 
 relations = parse_binary_relations('./lab_2_variant_52.txt', 15)
+
+
+def is_empty(set: set) -> bool:
+    return len(set) == 0
+
+
+def qiHelper(matrix: list[list[int]], i: int, prevQ: list[int]) -> list[int]:
+    acc: list[int] = []
+    diff = set(Si(matrix, i)).difference(set(Si(matrix, i-1)))
+
+    for x in diff:
+        if is_empty(set(upperSection(matrix, x)).intersection(set(prevQ))):
+            acc.append(x)
+
+    return acc
+
+
+def Qi(matrix: list[list[int]], i: int) -> list[int]:
+    if (i == 0):
+        return S0(matrix)
+
+    prevQ = Qi(matrix, i-1)
+    return list(set(prevQ).union(set(qiHelper(matrix, i, prevQ))))
+
+
+def neumann_morgenstern(matrix: list[list[int]], omegaPower: int) -> list[int]:
+    omega = set(range(omegaPower - 1))
+    i = 0
+    while set(Si(matrix, i)) != omega:
+        i += 1
+
+    l = i
+
+    return Qi(matrix, l)
+
+
+print(neumann_morgenstern(relations[0], 15))
