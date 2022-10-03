@@ -82,8 +82,9 @@ def find_all_indexes(lst: list, pred) -> list[int]:
 
 def upperSection(matrix: list[list[int]], i: int) -> list[int]:
     section = []
-    for row in matrix:
-        section.append(row[i])
+    for index, row in enumerate(matrix):
+        if row[i] == 1:
+            section.append(index)
 
     return section
 
