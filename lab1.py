@@ -145,7 +145,8 @@ def neumann_morgenstern(matrix: list[list[int]], omegaPower: int) -> list[int]:
 
     l = i
 
-    return Qi(matrix, l)
+    result = Qi(matrix, l)
+    return list(map(lambda x: x + 1, result))
 
 
 print(neumann_morgenstern(relations[0], 15))
