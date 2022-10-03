@@ -1,6 +1,7 @@
 import numpy as np
 import copy
 import functools
+import enum
 
 
 def stringsToInts(arr: list[str]) -> list[int]:
@@ -161,6 +162,13 @@ I = "I"
 EMPTY = None
 
 
+class PIN(enum.Enum):
+    N = N
+    P = P
+    I = I
+    EMPTY = EMPTY
+
+
 def mirror_elem(matrix: list[list], x, y):
     return matrix[y][x]
 
@@ -214,3 +222,23 @@ def compose(*fs):
 extractPIN = compose(extractP, extractI, extractN)
 
 print(np.array(extractPIN(relations[2].tolist())))
+
+
+def K(matrix: list[list[PIN]], vals_to_replace: list[PIN]) -> list[list[int]]:
+    matrix_copy = copy.deepcopy(matrix)
+
+    for x, row in enumerate(matrix):
+        for y, elem in enumerate(row):
+            if (elem in vals_to_replace):
+                matrix_copy[x][y] = 1
+
+    return matrix_copy
+
+
+def K1(matrix: list[list[PIN]]): return K(matrix, [P, I, N])
+def K2(matrix: list[list[PIN]]): return K(matrix, [P, N])
+def K3(matrix: list[list[PIN]]): return K(matrix, [P, I])
+def K4(matrix: list[list[PIN]]): return K(matrix, [P])
+
+
+pin = extractPIN(relations[2].tolist())
