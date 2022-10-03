@@ -1,4 +1,6 @@
 import numpy as np
+import copy
+import functools
 
 
 def stringsToInts(arr: list[str]) -> list[int]:
@@ -149,4 +151,66 @@ def neumann_morgenstern(matrix: list[list[int]], omegaPower: int) -> list[int]:
     return list(map(lambda x: x + 1, result))
 
 
-print(neumann_morgenstern(relations[0], 15))
+# print(neumann_morgenstern(relations[0], 15))
+
+# k-optimization
+
+N = "N"
+P = "P"
+I = "I"
+EMPTY = None
+
+
+def mirror_elem(matrix: list[list], x, y):
+    return matrix[y][x]
+
+
+def replace_symmetrical_elems(matrix: list[list[int]], elem_val, replacement):
+    matrix_copy = copy.deepcopy(matrix)
+    def applied_mirr_elem(x, y): return mirror_elem(matrix, x, y)
+
+    for x, row in enumerate(matrix):
+        for y, elem in enumerate(row):
+            if elem == elem_val and applied_mirr_elem(x, y) == elem_val:
+                matrix_copy[x][y] = replacement
+                matrix_copy[y][x] = replacement
+
+    return matrix_copy
+
+
+def extractN(matrix): return replace_symmetrical_elems(matrix, 0, N)
+def extractI(matrix): return replace_symmetrical_elems(matrix, 1, I)
+
+
+def extractP(matrix: list[list[int]]):
+    matrix_copy = copy.deepcopy(matrix)
+    def applied_mirr_elem(x, y): return mirror_elem(matrix, x, y)
+
+    for x, row in enumerate(matrix):
+        for y, elem in enumerate(row):
+            if elem == 1 and applied_mirr_elem(x, y) == 0:
+                matrix_copy[x][y] = P
+                matrix_copy[y][x] = EMPTY
+
+            if elem == 0 and applied_mirr_elem(x, y) == 1:
+                matrix_copy[x][y] = EMPTY
+                matrix_copy[y][x] = P
+
+    return matrix_copy
+
+# the following snippet taken from https://stackoverflow.com/questions/16739290/composing-functions-in-python
+
+
+def compose2(f, g):
+    return lambda *a, **kw: f(g(*a, **kw))
+
+
+def compose(*fs):
+    return functools.reduce(compose2, fs)
+
+# end of snippet
+
+
+extractPIN = compose(extractP, extractI, extractN)
+
+print(np.array(extractPIN(relations[2].tolist())))
