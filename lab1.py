@@ -141,6 +141,7 @@ def Qi(matrix: list[list[int]], i: int) -> list[int]:
 
 
 def neumann_morgenstern(matrix: list[list[int]], omegaPower: int) -> list[int]:
+    # replace omegaPower - 1 with omegaPower
     omega = set(range(omegaPower - 1))
     i = 0
     while set(Si(matrix, i)) != omega:
@@ -221,7 +222,7 @@ def compose(*fs):
 
 extractPIN = compose(extractP, extractI, extractN)
 
-print(np.array(extractPIN(relations[2].tolist())))
+# print(np.array(extractPIN(relations[2].tolist())))
 
 
 def K(matrix: list[list[PIN]], vals_to_replace: list[PIN]) -> list[list[int]]:
@@ -241,4 +242,68 @@ def K3(matrix: list[list[PIN]]): return K(matrix, [P, I])
 def K4(matrix: list[list[PIN]]): return K(matrix, [P])
 
 
-pin = extractPIN(relations[2].tolist())
+def strict_superset(superset: set, subset: set) -> bool:
+    return superset.issuperset(subset) and superset != subset
+
+
+def strict_subset(subset: set, superset: set) -> bool:
+    return subset.issubset(superset) and superset != subset
+
+
+def row_to_indexes(row: list[PIN | int]) -> list[int]:
+    indexes: list[int] = []
+    for i, elem in enumerate(row):
+        if (elem == 1):
+            indexes.append(i)
+
+    return indexes
+
+
+def get_maximal_alts_cond1(matrix: list[list[PIN | int]], x: int) -> bool:
+    acc = True
+    for y, _ in enumerate(matrix):
+        if (x != y):
+            acc = acc and set(row_to_indexes(matrix[x])).issuperset(
+                set(row_to_indexes(matrix[y])))
+
+    return acc
+
+
+def get_maximal_alts_cond2(matrix: list[list[PIN | int]], x: int) -> bool:
+    acc = False
+    for y, _ in enumerate(matrix):
+        if (x != y):
+            acc = acc or strict_subset(
+                set(row_to_indexes(matrix[x])), set(row_to_indexes(matrix[y])))
+
+    return not acc
+
+
+def get_maximal_alts(matrix: list[list[PIN | int]]):
+    max_alts: list[int] = []
+    for x, _ in enumerate(matrix):
+        cond1 = get_maximal_alts_cond1(matrix, x)
+        cond2 = get_maximal_alts_cond2(matrix, x)
+        if cond1 and cond2:
+            max_alts.append(x)
+
+    return max_alts
+
+
+def get_optimal_alts(S: list[list[PIN | int]], max_alts: list[int], omegaPower: int):
+    opt_alts: list[int] = []
+    for x in max_alts:
+        Sx = row_to_indexes(S[x])
+        if (set(Sx) == set(range(omegaPower))):
+            opt_alts.append(x)
+
+    return opt_alts
+
+
+for i in range(10):
+    pin = extractPIN(relations[i].tolist())
+    S = K4(pin)
+    max_alts = get_maximal_alts(S)
+    opt_alts = get_optimal_alts(S, max_alts, 15)
+    print('max_alts', max_alts)
+    print('opt_alts', opt_alts)
