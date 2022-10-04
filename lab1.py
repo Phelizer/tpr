@@ -141,8 +141,8 @@ def Qi(matrix: list[list[int]], i: int) -> list[int]:
 
 
 def neumann_morgenstern(matrix: list[list[int]], omegaPower: int) -> list[int]:
-    # replace omegaPower - 1 with omegaPower
-    omega = set(range(omegaPower - 1))
+    omega = set(range(omegaPower))
+    print('omega', omega)
     i = 0
     while set(Si(matrix, i)) != omega:
         i += 1
