@@ -1,4 +1,3 @@
-from cmath import log
 import numpy as np
 import copy
 import functools
@@ -298,6 +297,27 @@ def get_optimal_alts(S: list[list[PIN | int]], max_alts: list[int], omegaPower: 
     return opt_alts
 
 
+def outputKOptimizationResults(matrix: list[list[int]]):
+    pin = extractPIN(matrix)
+    S1, S2, S3, S4 = K1(pin), K2(pin), K3(pin), K4(pin)
+    print("K1 maximal alts:")
+    print(get_maximal_alts(S1))
+    print("K1 optimal alts:")
+    print(get_optimal_alts(S1, get_maximal_alts(S1), 15))
+    print("K2 maximal alts:")
+    print(get_maximal_alts(S2))
+    print("K2 optimal alts:")
+    print(get_optimal_alts(S2, get_maximal_alts(S2), 15))
+    print("K3 maximal alts:")
+    print(get_maximal_alts(S3))
+    print("K3 optimal alts:")
+    print(get_optimal_alts(S3, get_maximal_alts(S3), 15))
+    print("K4 maximal alts:")
+    print(get_maximal_alts(S4))
+    print("K4 optimal alts:")
+    print(get_optimal_alts(S4, get_maximal_alts(S4), 15))
+
+
 def run():
     relations = parse_binary_relations('./lab_2_variant_52.txt', 15)
     for i, rel in enumerate(relations):
@@ -308,25 +328,8 @@ def run():
         if is_acyclic(listy_rel):
             solution = neumann_morgenstern(listy_rel, 15)
             print('Neuman-Morgenstern: ', solution)
-        else:
-            pin = extractPIN(listy_rel)
-            S1, S2, S3, S4 = K1(pin), K2(pin), K3(pin), K4(pin)
-            print("K1 maximal alts:")
-            print(get_maximal_alts(S1))
-            print("K1 optimal alts:")
-            print(get_optimal_alts(S1, get_maximal_alts(S1), 15))
-            print("K2 maximal alts:")
-            print(get_maximal_alts(S2))
-            print("K2 optimal alts:")
-            print(get_optimal_alts(S2, get_maximal_alts(S2), 15))
-            print("K3 maximal alts:")
-            print(get_maximal_alts(S3))
-            print("K3 optimal alts:")
-            print(get_optimal_alts(S3, get_maximal_alts(S3), 15))
-            print("K4 maximal alts:")
-            print(get_maximal_alts(S4))
-            print("K4 optimal alts:")
-            print(get_optimal_alts(S4, get_maximal_alts(S4), 15))
+
+        outputKOptimizationResults(listy_rel)
 
 
 run()
