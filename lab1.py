@@ -1,3 +1,4 @@
+from cmath import log
 import numpy as np
 import copy
 import functools
@@ -30,7 +31,8 @@ def parse_binary_relations(path: str, omegaPower: int) -> list[list[int]]:
 
 
 def remove_node(matrix: list[list[int]], i: int) -> list[list[int]]:
-    matrix_without_row = matrix[:i] + matrix[i+1:]
+    matrix_copy = copy.deepcopy(matrix)
+    matrix_without_row = matrix_copy[:i] + matrix_copy[i+1:]
     for row in matrix_without_row:
         row.pop(i)
 
@@ -114,9 +116,6 @@ def Si(matrix: list[list[int]], i: int) -> list[int]:
     return list(set(prevS).union(set(siHelper(matrix, prevS))))
 
 
-relations = parse_binary_relations('./lab_2_variant_52.txt', 15)
-
-
 def is_empty(set: set) -> bool:
     return len(set) == 0
 
@@ -142,7 +141,6 @@ def Qi(matrix: list[list[int]], i: int) -> list[int]:
 
 def neumann_morgenstern(matrix: list[list[int]], omegaPower: int) -> list[int]:
     omega = set(range(omegaPower))
-    print('omega', omega)
     i = 0
     while set(Si(matrix, i)) != omega:
         i += 1
@@ -300,10 +298,35 @@ def get_optimal_alts(S: list[list[PIN | int]], max_alts: list[int], omegaPower: 
     return opt_alts
 
 
-for i in range(10):
-    pin = extractPIN(relations[i].tolist())
-    S = K4(pin)
-    max_alts = get_maximal_alts(S)
-    opt_alts = get_optimal_alts(S, max_alts, 15)
-    print('max_alts', max_alts)
-    print('opt_alts', opt_alts)
+def run():
+    relations = parse_binary_relations('./lab_2_variant_52.txt', 15)
+    for i, rel in enumerate(relations):
+        print('======================')
+        print('relation #' + str(i + 1))
+        print('======================')
+        listy_rel = rel.tolist()
+        if is_acyclic(listy_rel):
+            solution = neumann_morgenstern(listy_rel, 15)
+            print('Neuman-Morgenstern: ', solution)
+        else:
+            pin = extractPIN(listy_rel)
+            S1, S2, S3, S4 = K1(pin), K2(pin), K3(pin), K4(pin)
+            print("K1 maximal alts:")
+            print(get_maximal_alts(S1))
+            print("K1 optimal alts:")
+            print(get_optimal_alts(S1, get_maximal_alts(S1), 15))
+            print("K2 maximal alts:")
+            print(get_maximal_alts(S2))
+            print("K2 optimal alts:")
+            print(get_optimal_alts(S2, get_maximal_alts(S2), 15))
+            print("K3 maximal alts:")
+            print(get_maximal_alts(S3))
+            print("K3 optimal alts:")
+            print(get_optimal_alts(S3, get_maximal_alts(S3), 15))
+            print("K4 maximal alts:")
+            print(get_maximal_alts(S4))
+            print("K4 optimal alts:")
+            print(get_optimal_alts(S4, get_maximal_alts(S4), 15))
+
+
+run()
